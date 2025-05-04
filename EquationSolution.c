@@ -1,61 +1,69 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
+#define SIZE 20
 
 float f(float x) {
-    return (pow(x, 3) - 3*x - 5);
+    return pow(x, 3) - 3*x - 5;
 }
 
 float f_(float x) {
-    return (3 * pow(x, 2) - 3);
+    return 3 * pow(x, 2) - 3;
 }
 
-void bisectionMethod(float a, float b, float e) {
-    int n = 0; float c;
-    printf("Bisection Method:\nn\ta\tb\tc\tf(a)\tf(b)\tf(c)\n");
-    do {
-        c = (a + b) / 2.0;
-        printf("%d\t%0.3f\t%0.3f\t%0.3f\t%c\t%c\t%c\n", n++, a, b, c, f(a) < 0 ? '-' : '+', f(b) < 0 ? '-' : '+', f(b) < 0 ? '-' : '+');
-        if (f(c) * f(b) < 0) a = c;
-        else b = c;
-    } while (fabs(b - a) > e);
-    printf("Result: %0.3f\n\n", c);
+char getOp(float x) {
+    return x < 0 ? '-' : '+';
 }
 
-void newtonRaphsonMethod(float a, float e) {
-    int n = 0; float c;
-    printf("Newton Raphson Method:\nn\txn\tf(xn)\tf_(xn)\tf(xn)/f_(xn)\txn+1 = xn - f(xn)/f_(xn)\n");
-    c = a - (f(a) / f_(a));
+void bisection_method(float a, float b, float e) {
+    int i = 0; float c;
+    printf("n\ta\tb\tc\tf(a)\tf(b)\tf(c)\n");
     do {
-        printf("%d\t%0.3f\t%0.3f\t%0.3f\t%0.3f\t\t%0.3f\n", n++, a, f(a), f_(a), f(a)/f_(a), c);
+        c = (a + b) / 2;
+        printf("%d\t%0.4f\t%0.4f\t%0.4f\t%c\t%c\t%c\n", i++, a, b, c, getOp(f(a)), getOp(f(b)), getOp(f(c)));
+        if (f(a) * f(c) < 0) b = c;
+        else a = c;
+    }
+    while (fabs(a - b) > e);
+    printf("Result: %0.3f\n", c);
+}
+
+void newton_raphson_method(float a, float b, float e) {
+    int i = 0; float c;
+    printf("n\txn\tf(xn)/f_(xn)\txn+1 = xn + f(xn)/f_(xn)\n");
+    c = a - f(a) / f_(a);
+    do {
+        printf("%d\t%0.4f\t%0.4f\t%0.4f\n", i++, a, f(a)/f_(a), c);
         a = c;
-        c = a - (f(a) / f_(a));
+        c = a - f(a) / f_(a);
     } while (fabs(a - c) > e);
-    printf("Result: %0.3f\n\n", a);
+    printf("Result: %0.3f\n", c);
 }
 
-void regulaFalsiMethod(float a, float b, float e) {
-    int n = 0; float c;
-    printf("Regula Falsi Method:\nn\ta\tb\tc\tf(a)\tf(b)\tf(c)\n");
+void regula_falsi_method(float a, float b, float e) {
+    int i = 0; float c;
+    printf("n\ta\tb\tc\tf(a)\tf(b)\tf(c)\n");
     do {
         c = (a * f(b) - b * f(a)) / (f(b) - f(a));
-        printf("%d\t%0.3f\t%0.3f\t%0.3f\t%c\t%c\t%c\n", n++, a, b, c, f(a) < 0 ? '-' : '+', f(b) < 0 ? '-' : '+', f(b) < 0 ? '-' : '+');
-        if (f(c) * f(b) < 0) a = c;
-        else b = c;
-    } while (fabs(b - a) > e);
-    printf("Result: %0.3f\n\n", c);
+        printf("%d\t%0.4f\t%0.4f\t%0.4f\t%c\t%c\t%c\n", i++, a, b, c, getOp(f(a)), getOp(f(b)), getOp(f(c)));
+        if (f(a) * f(c) < 0) b = c;
+        else a = c;
+    }
+    while (fabs(a - b) > e);
+    printf("Result: %0.3f\n", c);
 }
 
 void main() {
-    float r1, r2, error;
-    do {
-        printf("Enter two roots: ");
-        scanf("%f %f", &r1, &r2);
-        if (f(r1) * f(r2) >= 0) printf("Wrong roots!\n");
-        else break;
-    } while (1);
+    float a, b, e;
+    while (1) {
+        printf("Enter 2 roots: ");
+        scanf("%f %f", &a, &b);
+        if (f(a) * f(b) < 0) break;
+        printf("Invalid roots!\n");
+    }
     printf("Enter error: ");
-    scanf("%f", &error);
-    bisectionMethod(r1, r2, error);
-    newtonRaphsonMethod(r1, error);
-    regulaFalsiMethod(r1, r2, error);
+    scanf("%f", &e);
+    bisection_method(a, b, e);
+    newton_raphson_method(a, b, e);
+    regula_falsi_method(a, b, e);
 }
